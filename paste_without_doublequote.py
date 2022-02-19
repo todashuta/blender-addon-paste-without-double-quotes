@@ -20,7 +20,7 @@
 bl_info = {
     "name": "Paste without double quotes",
     "author": "todashuta",
-    "version": (1, 0, 2),
+    "version": (1, 0, 3),
     "blender": (2, 80, 0),
     "location": "File Browser",
     "description": "",
@@ -43,7 +43,6 @@ translation_dict = {
 
 import bpy
 import os
-from operator import attrgetter
 from pathlib import Path
 
 
@@ -57,7 +56,7 @@ class PASTE_WITHOUT_DOUBLE_QUOTES_OT_main(bpy.types.Operator):
         if not isinstance(context.space_data, bpy.types.SpaceFileBrowser):
             return False
         try:
-            identifier = attrgetter("button_prop.identifier")(context)
+            identifier = context.button_prop.identifier
             return identifier in {"directory", "filename"}
         except:
             return False
