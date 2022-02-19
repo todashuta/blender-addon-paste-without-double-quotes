@@ -20,7 +20,7 @@
 bl_info = {
     "name": "Paste without double quotes",
     "author": "todashuta",
-    "version": (1, 0, 0),
+    "version": (1, 0, 1),
     "blender": (2, 80, 0),
     "location": "File Browser",
     "description": "",
@@ -54,16 +54,25 @@ class PASTE_WITHOUT_DOUBLE_QUOTES_OT_main(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return isinstance(context.space_data, bpy.types.SpaceFileBrowser)
+        if not isinstance(context.space_data, bpy.types.SpaceFileBrowser):
+            return False
+        try:
+            identifier = attrgetter("button_prop.identifier")(context)
+            return identifier in {"directory", "filename"}
+        except:
+            return False
 
     def execute(self, context):
         s = context.window_manager.clipboard
+        if s == "":
+            print("[Paste without double quotes] empty string")
+            return {"CANCELLED"}
         if s.startswith('"') and s.endswith('"'):
             s = s.strip('"')
 
         p = Path(s)
         if not p.exists():
-            self.report({"WARNING"}, "Invalid filepath")
+            self.report({"WARNING"}, "File path is not valid.")
             return {"CANCELLED"}
 
         if p.is_file():
@@ -78,8 +87,9 @@ class PASTE_WITHOUT_DOUBLE_QUOTES_OT_main(bpy.types.Operator):
         return {"FINISHED"}
 
 
+# This class has to be exactly named like that to insert an entry in the right click menu
 class WM_MT_button_context(bpy.types.Menu):
-    bl_label = "Paste without double quotes"
+    bl_label = "Unused"
 
     def draw(self, context):
         pass
@@ -87,12 +97,6 @@ class WM_MT_button_context(bpy.types.Menu):
 
 def menu_func(self, context):
     if not PASTE_WITHOUT_DOUBLE_QUOTES_OT_main.poll(context):
-        return
-    try:
-        identifier = attrgetter("button_prop.identifier")(context)
-        if not identifier in {"directory", "filename"}:
-            return
-    except:
         return
     layout = self.layout
     layout.separator()
