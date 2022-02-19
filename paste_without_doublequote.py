@@ -108,11 +108,14 @@ def menu_func(self, context):
 
 classes = [
         PASTE_WITHOUT_DOUBLE_QUOTES_OT_main,
-        WM_MT_button_context,
+        #WM_MT_button_context,
 ]
 
 
 def register():
+    if not hasattr(bpy.types, "WM_MT_button_context"):
+        bpy.utils.register_class(WM_MT_button_context)
+
     for cls in classes:
         bpy.utils.register_class(cls)
 
