@@ -20,7 +20,7 @@
 bl_info = {
     "name": "Paste without double quotes",
     "author": "todashuta",
-    "version": (1, 0, 1),
+    "version": (1, 0, 2),
     "blender": (2, 80, 0),
     "location": "File Browser",
     "description": "",
@@ -71,8 +71,12 @@ class PASTE_WITHOUT_DOUBLE_QUOTES_OT_main(bpy.types.Operator):
             s = s.strip('"')
 
         p = Path(s)
-        if not p.exists():
-            self.report({"WARNING"}, "File path is not valid.")
+        try:
+            if not p.exists():
+                self.report({"WARNING"}, "File path is not valid.")
+                return {"CANCELLED"}
+        except:
+            self.report({"ERROR"}, "File path is not valid.")
             return {"CANCELLED"}
 
         if p.is_file():
