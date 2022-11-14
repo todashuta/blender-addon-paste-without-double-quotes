@@ -20,8 +20,8 @@
 bl_info = {
     "name": "Paste without double quotes",
     "author": "todashuta",
-    "version": (1, 0, 3),
-    "blender": (2, 80, 0),
+    "version": (1, 1, 0),
+    "blender": (3, 3, 0),
     "location": "File Browser",
     "description": "",
     "warning": "",
@@ -90,14 +90,6 @@ class PASTE_WITHOUT_DOUBLE_QUOTES_OT_main(bpy.types.Operator):
         return {"FINISHED"}
 
 
-# This class has to be exactly named like that to insert an entry in the right click menu
-class WM_MT_button_context(bpy.types.Menu):
-    bl_label = "Unused"
-
-    def draw(self, context):
-        pass
-
-
 def menu_func(self, context):
     if not PASTE_WITHOUT_DOUBLE_QUOTES_OT_main.poll(context):
         return
@@ -106,20 +98,16 @@ def menu_func(self, context):
     layout.operator(PASTE_WITHOUT_DOUBLE_QUOTES_OT_main.bl_idname)
 
 
-classes = [
+classes = (
         PASTE_WITHOUT_DOUBLE_QUOTES_OT_main,
-        #WM_MT_button_context,
-]
+)
 
 
 def register():
-    if not hasattr(bpy.types, "WM_MT_button_context"):
-        bpy.utils.register_class(WM_MT_button_context)
-
     for cls in classes:
         bpy.utils.register_class(cls)
 
-    bpy.types.WM_MT_button_context.append(menu_func)
+    bpy.types.UI_MT_button_context_menu.append(menu_func)
 
     bpy.app.translations.register(__name__, translation_dict)
 
@@ -127,7 +115,7 @@ def register():
 def unregister():
     bpy.app.translations.unregister(__name__)
 
-    bpy.types.WM_MT_button_context.remove(menu_func)
+    bpy.types.UI_MT_button_context_menu.remove(menu_func)
 
     for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
